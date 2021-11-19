@@ -70,15 +70,10 @@
 %%% Footnote stuff
 % Cannot get it working to skip the title page when extra information
 % is displayed in the footline. In the next version hopefully...
-\ifthenelse{\equal{\dept}{none}}{%
-    \setbeamertemplate{footline}{%
-        \vspace{1.75cm}
-    }
-}{%
-    \setbeamertemplate{footline}{%
+\setbeamertemplate{footline}{%
         \ifthenelse{\equal{\slidenumbers}{slide} \OR \equal{\slidenumbers}{relative}}{%
-        	\vspace{0.5cm}
             \hspace{1cm}%
+            \vspace{-0.3cm}
             \begin{beamercolorbox}[wd=.08\paperwidth,ht=2.25ex,dp=1ex]{page number in head/foot}%
     			\usebeamerfont{page number in head/foot}\insertframenumber
                   \ifthenelse{\equal{\slidenumbers}{relative}}{%
@@ -102,7 +97,6 @@
         }
 
     }
-}
 
 
 \setbeamertemplate{footnote}{%
@@ -297,8 +291,8 @@
         \begin{beamercolorbox}{title}%
             \usebeamerfont{title}{\Huge\inserttitle\par}%
             \vspace{0.25cm}%
-            \usebeamerfont{subtitle}\insertsubtitle\par%
-            \vspace{0.25cm}
+            \usebeamerfont{subtitle}{\large \insertsubtitle\par}%
+            \vspace{1cm}
             \usebeamerfont{author}\insertauthor\par%
             \vspace{0.25cm}
         \end{beamercolorbox}%
