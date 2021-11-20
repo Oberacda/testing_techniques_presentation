@@ -4,10 +4,31 @@
 % !TeX TS-program = pdflatex
 % !BIB TS-program = biber
 
-\documentclass[showdate=true, slidenumbers=relative]{beamerruhuisstijl169}
+\documentclass[showdate=true, slidenumbers=slide]{beamerruhuisstijl169}
+
+\usepackage{fontspec}
+\setsansfont[
+    Path = ./fonts/,
+    Extension = .otf,
+    BoldFont = *-Bold,
+    BoldItalicFont = *-BoldItalic,
+    ItalicFont = *-Italic,
+    UprightFont = *-Regular
+]{Inter}
+
+\setmonofont[
+    Path = ./fonts/,
+    Extension = .ttf,
+    BoldFont = *-Bold,
+    BoldItalicFont = *-BoldItalic,
+    ItalicFont = *-Italic,
+    UprightFont = *-Regular
+]{RobotoMono}
 
 \usepackage{xcolor}
 \usepackage{appendix}
+
+\usepackage{graphicx}
 
 \title{Testing Techniques}
 \subtitle{Group 5 - Testing the Transmission Control Protocol (TCP)}
@@ -32,9 +53,69 @@
 
 \section{Test Architecture}
 
+\begin{frame}{Test Architecture}
+    \centering
+    \includegraphics[width=\textwidth]{figures/SUTArchitecture.pdf}
+\end{frame}
+
+\begin{frame}{SUT Client}
+    \begin{itemize}
+        \item \textbf{3 components}
+        \item \textit{3 components}
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{Test Server}
+    \begin{itemize}
+        \item 3 components
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{Test Runner}
+    \begin{itemize}
+        \item 3 components
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{Command Language}
+    \begin{columns}[T,totalwidth=\linewidth]
+        \begin{column}{0.5\textwidth}
+            \begin{itemize}
+                \item 3 components
+            \end{itemize}
+        \end{column}
+        \begin{column}{0.5\textwidth}
+            \includegraphics[width=\textwidth]{figures/ControlMessagesJson.pdf}
+        \end{column}
+    \end{columns}
+\end{frame}
+
+\begin{frame}{Test Case}
+    \begin{columns}
+        \begin{column}{0.5\textwidth}
+            \begin{itemize}
+                \item 3 components
+            \end{itemize}
+        \end{column}
+        \begin{column}{0.5\textwidth}
+            \includegraphics{figures/testcases/TestCase11.pdf}
+        \end{column}
+    \end{columns}
+\end{frame}
+
 \section{Test Implementation \& Results}
 
 \section{Model Based Testing}
+
+\begin{frame}
+\vfill
+\centering
+{\LARGE Thank you for your attention.}\\
+\vspace{1cm}
+{\Large \textbf{Questions ?}}
+\vfill
+\end{frame}
+
 \appendix
 \begin{frame}{Disclaimer}
     \begin{block}{Introduction}

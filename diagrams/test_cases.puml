@@ -1,0 +1,660 @@
+@startuml TestCase1
+skinparam monochrome true
+skinparam defaultFontName Inter
+!pragma layout elk
+
+participant "TestRunner" as tr
+participant "System under test" as sut
+participant "Test server" as ts
+
+== Initialization ==
+
+== Test ==
+autonumber "<b>T[0]"
+
+tr -> ts : Receive<SYN> + Respond<SYN+ACK>
+tr -> ts : Receive<ACK>
+tr -> sut : Connect
+note left of sut
+The SUT is assumed 
+to be in a CLOSED state.
+end note
+sut -> ts : SYN<Seq=0>
+note left of sut
+The SUT is assumed 
+to be in a SYN SEND state.
+end note
+sut <- ts : SYN + ACK <Seq=0, Ack=1>
+tr <- ts : Result <T[1]>
+sut -> ts : ACK <Seq=1, Ack=1>
+note left of sut
+The SUT is assumed 
+to be in a ESTABLISHED state.
+end note
+tr <- sut : Result <T[3]>
+tr <- ts : Result <T[2]>
+@enduml
+
+@startuml TestCase2
+skinparam monochrome true
+skinparam defaultFontName Inter
+!pragma layout elk
+
+participant "TestRunner" as tr
+participant "System under test" as sut
+participant "Test server" as ts
+
+== Initialization ==
+autonumber "<b>I[0]"
+
+== Test ==
+autonumber "<b>T[0]"
+tr -> ts : Receive<SYN> + Respond<ACK>
+tr -> ts : Receive<RST>
+tr -> sut : Connect
+note left of sut
+The SUT is assumed 
+to be in a CLOSED state.
+end note
+sut -> ts : SYN<Seq=0>
+note left of sut
+The SUT is assumed 
+to be in a SYN SEND state.
+end note
+sut <- ts : ACK <Seq=0, Ack=1>
+tr <- ts : Result <T[1]>
+sut -> ts : RST <Seq=1, Ack=1>
+note left of sut
+The SUT is assumed 
+to be in a CLOSED state.
+end note
+tr <- sut : Result <T[3]>
+tr <- ts : Result <T[2]>
+@enduml
+@startuml TestCase3
+skinparam monochrome true
+skinparam defaultFontName Inter
+!pragma layout elk
+
+participant "TestRunner" as tr
+participant "System under test" as sut
+participant "Test server" as ts
+
+== Initialization ==
+autonumber "<b>I[0]"
+
+== Test ==
+autonumber "<b>T[0]"
+tr -> ts : Receive<SYN> + Respond<invalid ACK>
+tr -> ts : Receive<RST>
+tr -> sut : Connect
+note left of sut
+The SUT is assumed 
+to be in a CLOSED state.
+end note
+sut -> ts : SYN<Seq=0>
+note left of sut
+The SUT is assumed 
+to be in a SYN SEND state.
+end note
+sut <- ts : ACK <Seq=0, Ack=33>
+tr <- ts : Result <T[1]>
+sut -> ts : RST <Seq=0>
+note left of sut
+The SUT is assumed 
+to be in a CLOSED state.
+end note
+tr <- sut : Result <T[3]>
+tr <- ts : Result <T[2]>
+@enduml
+@startuml TestCase4
+skinparam monochrome true
+skinparam defaultFontName Inter
+!pragma layout elk
+
+participant "TestRunner" as tr
+participant "System under test" as sut
+participant "Test server" as ts
+
+== Initialization ==
+autonumber "<b>I[0]"
+
+== Test ==
+autonumber "<b>T[0]"
+tr -> ts : Receive<SYN>
+tr -> ts : Send<SYN>
+tr -> ts : Receive<SYN+ACK>
+tr -> ts : Send<SYN+ACK>
+tr -> sut : Connect
+note left of sut
+The SUT is assumed 
+to be in a CLOSED state.
+end note
+sut -> ts : SYN<Seq=0>
+note left of sut
+The SUT is assumed 
+to be in a SYN SEND state.
+end note
+tr <- ts : Result <T[1]>
+sut <- ts : SYN <Seq=0>
+tr <- ts : Result <T[2]>
+sut -> ts : SYN+ACK <Seq=1, Ack=1>
+note left of sut
+The SUT is assumed 
+to be in a SYN RCVD state.
+end note
+tr <- ts : Result <T[3]>
+sut <- ts : SYN+ACK <Seq=1, Ack=2>
+tr <- sut : Result <T[5]>
+note left of sut
+The SUT is assumed 
+to be in a ESTABLISHED state.
+end note
+tr <- ts : Result <T[4]>
+@enduml
+
+@startuml TestCase5
+skinparam monochrome true
+skinparam defaultFontName Inter
+!pragma layout elk
+
+participant "TestRunner" as tr
+participant "System under test" as sut
+participant "Test server" as ts
+
+== Initialization ==
+autonumber "<b>I[0]"
+tr -> sut : Listen
+note left of sut
+The SUT is assumed 
+to be in a Listen state.
+end note
+== Test ==
+autonumber "<b>T[0]"
+tr -> ts : Send<SYN>
+tr -> ts : Receive<SYN + ACK>
+tr -> ts : Send<ACK>
+
+sut <- ts : SYN<Seq=0>
+tr <- ts : Result <T[1]>
+note left of sut
+The SUT is assumed 
+to be in a SYN RCVD state.
+end note
+sut -> ts : SYN+ACK <Seq=0, Ack=1>
+tr <- ts : Result <T[2]>
+sut <- ts : ACK <Seq=1, Ack=1>
+note left of sut
+The SUT is assumed 
+to be in a ESTABLISHED state.
+end note
+tr <- ts : Result <T[3]>
+tr <- sut : Result <I[1]>
+@enduml
+@startuml TestCase6
+skinparam monochrome true
+skinparam defaultFontName Inter
+!pragma layout elk
+
+participant "TestRunner" as tr
+participant "System under test" as sut
+participant "Test server" as ts
+
+== Initialization ==
+autonumber "<b>I[0]"
+tr -> sut : Listen
+note left of sut
+The SUT is assumed 
+to be in a Listen state.
+end note
+== Test ==
+autonumber "<b>T[0]"
+tr -> ts : Send<SYN>
+tr -> ts : Receive<SYN + ACK>
+tr -> ts : Send<FIN + ACK>
+tr -> ts : Receive<ACK>
+sut <- ts : SYN<Seq=0>
+tr <- ts : Result <T[1]>
+note left of sut
+The SUT is assumed 
+to be in a SYN RCVD state.
+end note
+sut -> ts : SYN+ACK <Seq=0, Ack=1>
+tr <- ts : Result <T[2]>
+sut <- ts : FIN+ACK <Seq=1, Ack=1>
+note left of sut
+The SUT is assumed 
+to be in the CLOSE WAIT state.
+end note
+tr <- ts : Result <T[3]>
+sut -> ts : ACK<Seq=1, Ack=2>
+tr <- ts : Result <T[4]>
+tr <- sut : Result <I[1]>
+@enduml
+@startuml TestCase7
+skinparam monochrome true
+skinparam defaultFontName Inter
+!pragma layout elk
+
+participant "TestRunner" as tr
+participant "System under test" as sut
+participant "Test server" as ts
+
+== Initialization ==
+autonumber "<b>I[0]"
+tr -> ts : Receive<SYN> + Respond<SYN+ACK>
+tr -> ts : Receive<ACK>
+tr -> sut : Connect
+note left of sut
+The SUT is assumed 
+to be in a CLOSED state.
+end note
+sut -> ts : SYN<Seq=0>
+note left of sut
+The SUT is assumed 
+to be in a SYN SEND state.
+end note
+sut <- ts : SYN + ACK <Seq=0, Ack=1>
+tr <- ts : Result <I[1]>
+sut -> ts : ACK <Seq=1, Ack=1>
+note left of sut
+The SUT is assumed 
+to be in a ESTABLISHED state.
+end note
+tr <- sut : Result <I[3]>
+tr <- ts : Result <I[2]>
+...
+== Test ==
+autonumber "<b>T[0]"
+tr -> ts : Send<FIN+ACK>
+tr -> ts : Receive<ACK>
+tr -> ts : Receive<FIN+ACK>
+tr -> ts : Send<ACK>
+sut <- ts : FIN+ACK<Seq=1>
+tr <- ts : Result <T[1]>
+note left of sut
+The SUT is assumed 
+to be in a CLOSE WAIT state.
+end note
+sut -> ts : ACK <Seq=2, Ack=2>
+tr <- ts : Result <T[2]>
+tr -> sut : Close
+sut -> ts : FIN+ACK <Seq=3, Ack=2>
+note left of sut
+The SUT is assumed 
+to be in the LAST-ACK state.
+end note
+tr <- ts : Result <T[3]>
+sut <- ts : ACK<Seq=2, Ack=3>
+tr <- ts : Result <T[4]>
+tr <- sut : Result <T[9]>
+@enduml
+
+@startuml TestCase8
+skinparam monochrome true
+skinparam defaultFontName Inter
+!pragma layout elk
+
+participant "TestRunner" as tr
+participant "System under test" as sut
+participant "Test server" as ts
+
+== Initialization ==
+autonumber "<b>I[0]"
+tr -> ts : Receive<SYN> + Respond<SYN+ACK>
+tr -> ts : Receive<ACK>
+tr -> sut : Connect
+note left of sut
+The SUT is assumed 
+to be in a CLOSED state.
+end note
+sut -> ts : SYN<Seq=0>
+note left of sut
+The SUT is assumed 
+to be in a SYN SEND state.
+end note
+sut <- ts : SYN + ACK <Seq=0, Ack=1>
+tr <- ts : Result <I[1]>
+sut -> ts : ACK <Seq=1, Ack=1>
+note left of sut
+The SUT is assumed 
+to be in a ESTABLISHED state.
+end note
+tr <- sut : Result <I[3]>
+tr <- ts : Result <I[2]>
+...
+== Test ==
+autonumber "<b>T[0]"
+tr -> ts : Receive <FIN+ACK>
+tr -> ts : Send <FIN+ACK>
+tr -> ts : Receive <ACK>
+tr -> sut: Close
+sut -> ts : FIN+ACK<Seq=2, Ack=1>
+tr <- ts : Result <T[1]>
+note left of sut
+The SUT is assumed 
+to be in a FIN WAIT 1 state.
+end note
+sut <- ts : FIN+ACK <Seq=2, Ack=3>
+tr <- ts : Result <T[2]>
+sut -> ts : ACK<Seq=3, Ack=3>
+note left of sut
+The SUT is assumed 
+to be in the CLOSING state.
+end note
+tr <- ts : Result <T[3]>
+tr <- sut : Result <T[4]>
+@enduml
+@startuml TestCase9
+skinparam monochrome true
+skinparam defaultFontName Inter
+!pragma layout elk
+
+participant "TestRunner" as tr
+participant "System under test" as sut
+participant "Test server" as ts
+
+== Initialization ==
+autonumber "<b>I[0]"
+tr -> ts : Receive<SYN> + Respond<SYN+ACK>
+tr -> ts : Receive<ACK>
+tr -> sut : Connect
+note left of sut
+The SUT is assumed 
+to be in a CLOSED state.
+end note
+sut -> ts : SYN<Seq=0>
+note left of sut
+The SUT is assumed 
+to be in a SYN SEND state.
+end note
+sut <- ts : SYN + ACK <Seq=0, Ack=1>
+tr <- ts : Result <I[1]>
+sut -> ts : ACK <Seq=1, Ack=1>
+note left of sut
+The SUT is assumed 
+to be in a ESTABLISHED state.
+end note
+tr <- sut : Result <I[3]>
+tr <- ts : Result <I[2]>
+...
+== Test ==
+autonumber "<b>T[0]"
+tr -> ts : Receive <FIN+ACK>
+tr -> ts : Send <ACK>
+tr -> ts : Send <SEGMENT+ACK>
+tr -> ts : Receive <ACK>
+tr -> sut: Close
+sut -> ts : FIN+ACK<Seq=2, Ack=1>
+tr <- ts : Result <T[1]>
+note left of sut
+The SUT is assumed 
+to be in a FIN WAIT 1 state.
+end note
+sut <- ts : ACK <Seq=1, Ack=3>
+tr <- ts : Result <T[2]>
+note left of sut
+The SUT is assumed 
+to be in a FIN WAIT 2 state.
+end note
+tr <- sut : Result <T[5]>
+sut <- ts : SEGMENT+ACK <Seq=2, Ack=3, payload=15>
+tr <- ts : Result <T[3]>
+sut -> ts : ACK<Seq=3, Ack=17>
+tr <- ts : Result <T[4]>
+@enduml
+@startuml TestCase10
+skinparam monochrome true
+skinparam defaultFontName Inter
+!pragma layout elk
+
+participant "TestRunner" as tr
+participant "System under test" as sut
+participant "Test server" as ts
+
+== Initialization ==
+autonumber "<b>I[0]"
+tr -> ts : Receive<SYN> + Respond<SYN+ACK>
+tr -> ts : Receive<ACK>
+tr -> sut : Connect
+note left of sut
+The SUT is assumed 
+to be in a CLOSED state.
+end note
+sut -> ts : SYN<Seq=0>
+note left of sut
+The SUT is assumed 
+to be in a SYN SEND state.
+end note
+sut <- ts : SYN + ACK <Seq=0, Ack=1>
+tr <- ts : Result <I[1]>
+sut -> ts : ACK <Seq=1, Ack=1>
+note left of sut
+The SUT is assumed 
+to be in a ESTABLISHED state.
+end note
+tr <- sut : Result <I[3]>
+tr <- ts : Result <I[2]>
+...
+== Test ==
+autonumber "<b>T[0]"
+tr -> ts : Send <SEGMENT+ACK>
+tr -> ts : Receive <ACK>
+tr -> ts : Send <SEGMENT+ACK>
+tr -> ts : Receive <ACK>
+tr -> ts : Send <SEGMENT+ACK>
+tr -> ts : Receive <ACK>
+sut <- ts : SEGMENT+ACK<Seq=2, Ack=1, payload=100>
+tr <- ts : Result <T[1]>
+sut -> ts : ACK<Seq=1, Ack=102>
+tr <- ts : Result <T[2]>
+sut <- ts : SEGMENT+ACK<Seq=102, Ack=2, payload=100>
+tr <- ts : Result <T[3]>
+sut -> ts : ACK<Seq=2, Ack=202>
+tr <- ts : Result <T[4]>
+sut <- ts : SEGMENT+ACK<Seq=202, Ack=3, payload=100>
+tr <- ts : Result <T[5]>
+sut -> ts : ACK<Seq=3, Ack=302>
+tr <- ts : Result <T[6]>
+tr -> sut: Receive<payload=300>
+sut -> tr: Result<T[19]>
+@enduml
+
+@startuml TestCase11
+skinparam monochrome true
+skinparam defaultFontName Inter
+!pragma layout elk
+
+participant "TestRunner" as tr
+participant "System under test" as sut
+participant "Test server" as ts
+
+== Initialization ==
+autonumber "<b>I[0]"
+tr -> ts : Receive<SYN> + Respond<SYN+ACK>
+tr -> ts : Receive<ACK>
+tr -> sut : Connect
+note left of sut
+The SUT is assumed 
+to be in a CLOSED state.
+end note
+sut -> ts : SYN<Seq=0>
+note left of sut
+The SUT is assumed 
+to be in a SYN SEND state.
+end note
+sut <- ts : SYN + ACK <Seq=0, Ack=1>
+tr <- ts : Result <I[1]>
+sut -> ts : ACK <Seq=1, Ack=1>
+note left of sut
+The SUT is assumed 
+to be in a ESTABLISHED state.
+end note
+tr <- sut : Result <I[3]>
+tr <- ts : Result <I[2]>
+...
+== Test ==
+autonumber "<b>T[0]"
+tr -> ts : Receive <SEGMENT+ACK>
+tr -> ts : Send <ACK>
+tr -> ts : Receive <SEGMENT+ACK>
+tr -> ts : Send <ACK>
+tr -> ts : Receive <SEGMENT+ACK>
+tr -> ts : Send <ACK>
+tr -> sut: Send <payload=100>
+sut -> ts : SEGMENT+ACK<Seq=2, Ack=1, payload=100>
+tr <- ts : Result <T[1]>
+sut <- ts : ACK<Seq=1, Ack=102>
+tr <- ts : Result <T[2]>
+tr <- sut : Result <T[7]>
+tr -> sut: Send <payload=100>
+sut -> ts : SEGMENT+ACK<Seq=102, Ack=2, payload=100>
+tr <- ts : Result <T[3]>
+sut <- ts : ACK<Seq=2, Ack=202>
+tr <- ts : Result <T[4]>
+tr <- sut : Result <T[13]>
+tr -> sut: Send <payload=100>
+sut -> ts : SEGMENT+ACK<Seq=202, Ack=3, payload=100>
+tr <- ts : Result <T[5]>
+sut <- ts : ACK<seq=3, ack=302>
+tr <- ts : result <T[6]>
+tr <- sut : Result <T[19]>
+@enduml
+
+@startuml TestCase12
+skinparam monochrome true
+skinparam defaultFontName Inter
+!pragma layout elk
+
+participant "TestRunner" as tr
+participant "System under test" as sut
+participant "Test server" as ts
+
+== Initialization ==
+autonumber "<b>I[0]"
+tr -> ts : Receive<SYN> + Respond<SYN+ACK>
+tr -> ts : Receive<ACK>
+tr -> sut : Connect
+note left of sut
+The SUT is assumed 
+to be in a CLOSED state.
+end note
+sut -> ts : SYN<Seq=0>
+note left of sut
+The SUT is assumed 
+to be in a SYN SEND state.
+end note
+sut <- ts : SYN + ACK <Seq=0, Ack=1>
+tr <- ts : Result <I[1]>
+sut -> ts : ACK <Seq=1, Ack=1>
+note left of sut
+The SUT is assumed 
+to be in a ESTABLISHED state.
+end note
+tr <- sut : Result <I[3]>
+tr <- ts : Result <I[2]>
+...
+== Test ==
+autonumber "<b>T[0]"
+tr -> ts : Send <invalid ACK>
+tr -> ts : Receive <ACK>
+sut <- ts : ACK<Seq=1, Ack=109>
+tr <- ts : Result <T[1]>
+sut -> ts : ACK<Seq=2, Ack=1>
+tr <- ts : Result <T[2]>
+@enduml
+@startuml TestCase13
+skinparam monochrome true
+skinparam defaultFontName Inter
+!pragma layout elk
+
+participant "TestRunner" as tr
+participant "System under test" as sut
+participant "Test server" as ts
+
+== Initialization ==
+autonumber "<b>I[0]"
+tr -> ts : Receive<SYN> + Respond<SYN+ACK>
+tr -> ts : Receive<ACK>
+tr -> sut : Connect
+note left of sut
+The SUT is assumed 
+to be in a CLOSED state.
+end note
+sut -> ts : SYN<Seq=0>
+note left of sut
+The SUT is assumed 
+to be in a SYN SEND state.
+end note
+sut <- ts : SYN + ACK <Seq=0, Ack=1>
+tr <- ts : Result <I[1]>
+sut -> ts : ACK <Seq=1, Ack=1>
+note left of sut
+The SUT is assumed 
+to be in a ESTABLISHED state.
+end note
+tr <- sut : Result <I[3]>
+tr <- ts : Result <I[2]>
+...
+== Test ==
+autonumber "<b>T[0]"
+tr -> ts : Send <payload=100, seq=x>
+tr -> ts : Receive <ACK>
+tr -> ts : Send <payload=100, seq=x>
+tr -> ts : Receive <ACK>
+sut <- ts : SEGMENT<Seq=2, Ack=1, payload=100>
+tr <- ts : Result <T[1]>
+sut -> ts : ACK<Seq=1, Ack=102>
+tr <- ts : Result <T[2]>
+sut <- ts : SEGMENT<Seq=2, Ack=1, payload=100>
+tr <- ts : Result <T[3]>
+sut -> ts : ACK<Seq=1, Ack=102>
+tr <- ts : Result <T[4]>
+@enduml
+@startuml TestCase14
+skinparam monochrome true
+skinparam defaultFontName Inter
+!pragma layout elk
+
+participant "TestRunner" as tr
+participant "System under test" as sut
+participant "Test server" as ts
+
+== Initialization ==
+autonumber "<b>I[0]"
+tr -> ts : Receive<SYN> + Respond<SYN+ACK>
+tr -> ts : Receive<ACK>
+tr -> sut : Connect
+note left of sut
+The SUT is assumed 
+to be in a CLOSED state.
+end note
+sut -> ts : SYN<Seq=0>
+note left of sut
+The SUT is assumed 
+to be in a SYN SEND state.
+end note
+sut <- ts : SYN + ACK <Seq=0, Ack=1>
+tr <- ts : Result <I[1]>
+sut -> ts : ACK <Seq=1, Ack=1>
+note left of sut
+The SUT is assumed 
+to be in a ESTABLISHED state.
+end note
+tr <- sut : Result <I[3]>
+tr <- ts : Result <I[2]>
+...
+== Test ==
+autonumber "<b>T[0]"
+tr -> ts : Receive <SEGMENT+ACK>
+tr -> ts : Receive <SEGMENT+ACK>
+tr -> ts : Send <ACK>
+tr -> sut: Send <payload=100>
+sut -> ts : SEGMENT+ACK<Seq=2, Ack=1, payload=100>
+tr <- ts : Result <T[1]>
+sut -> ts : SEGMENT+ACK<Seq=2, Ack=1, payload=100>
+tr <- ts : Result <T[2]>
+sut <- ts : ACK<Seq=1, Ack=102>
+tr <- ts : Result <T[3]>
+tr <- sut : Result <T[4]>
+@enduml
