@@ -1,7 +1,7 @@
 % !TeX encoding = UTF-8
 % !TeX spellcheck = en_US
 % !TeX root = presentation.tex
-% !TeX TS-program = pdflatex
+% !TeX TS-program = xelatex
 % !BIB TS-program = biber
 
 \documentclass[showdate=true, slidenumbers=slide]{beamerruhuisstijl169}
@@ -30,6 +30,33 @@
 
 \usepackage{graphicx}
 
+\usepackage{listings}
+
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+
+\lstdefinestyle{mystyle}{
+    backgroundcolor=\color{backcolour},
+    commentstyle=\color{codegreen},
+    keywordstyle=\color{magenta},
+    numberstyle=\tiny\color{codegray},
+    stringstyle=\color{codepurple},
+    basicstyle=\ttfamily\footnotesize,
+    breakatwhitespace=false,
+    breaklines=true,
+    captionpos=b,
+    keepspaces=true,
+    numbers=left,
+    numbersep=5pt,
+    showspaces=false,
+    showstringspaces=false,
+    showtabs=false,
+    tabsize=2
+}
+\lstset{style=mystyle}
+
 \title{Testing Techniques}
 \subtitle{Group 5 - Testing the Transmission Control Protocol (TCP)}
 \date{\today}
@@ -48,7 +75,7 @@
 \section{System Under Test}
 
 \begin{frame}{TCP}
-    
+
 \end{frame}
 
 \section{Test Architecture}
@@ -60,20 +87,60 @@
 
 \begin{frame}{SUT Client}
     \begin{itemize}
-        \item \textbf{3 components}
-        \item \textit{3 components}
+        \item 3 Sub-components
+        \item \textbf{SUT client}
+        \begin{itemize}
+            \item Test management functions
+            \item Result checks
+            \item Mocking of user calls
+            \item Reports results to the TestRunner
+        \end{itemize}
+        \item \textbf{TCP Kernel implementation}
+        \begin{itemize}
+            \item Our actual System Under Test
+            \item Uses the IP interface
+            \item Interfaced using C functions
+        \end{itemize}
+        \item \textbf{Internet Protocol (IP) implementation}
+        \begin{itemize}
+            \item Communication with the \textbf{TestServer}
+        \end{itemize}
     \end{itemize}
 \end{frame}
 
 \begin{frame}{Test Server}
     \begin{itemize}
-        \item 3 components
+        \item Represents the \textbf{SUT}s communications partner
+        \item Does not use a TCP implementation
+        \item Verifies incoming packages
+        \begin{itemize}
+            \item Comparisons against expected values
+        \end{itemize}
+        \item Creates reply packages
+        \begin{itemize}
+            \item Field values have to be specified
+            \item Some automation for e.g. \textit{sequence numbers}
+        \end{itemize}
+        \item Reports to the \textbf{TestRunner}
+        \item Depends on the IP protocol
     \end{itemize}
 \end{frame}
 
 \begin{frame}{Test Runner}
     \begin{itemize}
-        \item 3 components
+        \item Test management component
+        \begin{itemize}
+            \item Loads test case files
+            \item Controls test execution
+            \item Does not evaluate actual results
+        \end{itemize}
+        \item Sends instructions to \textbf{TestServer} and \textbf{SUT Client}
+        \begin{itemize}
+            \item Uses a DSL for specifying inputs and expected results
+            \item Only checks that DSL command exit status
+            \item Collects tracing information from reply's
+        \end{itemize}
+        \item Uses TCP Websockets for communication
     \end{itemize}
 \end{frame}
 
@@ -81,7 +148,16 @@
     \begin{columns}[T,totalwidth=\linewidth]
         \begin{column}{0.5\textwidth}
             \begin{itemize}
-                \item 3 components
+                \item JSON based DSL
+                \item \texttt{testNumber} for test case identification
+                \item Different command types
+                \begin{itemize}
+                    \item \textit{SendReceive} - Sends package \& expect reply
+                    \item \textit{Connect} - Perform a TCP handshake
+                    \item \textit{Receive} - Expect incoming package
+                    \item \dots
+                \end{itemize}
+                \item Specific parameters per \texttt{commandType}
             \end{itemize}
         \end{column}
         \begin{column}{0.5\textwidth}
@@ -90,17 +166,36 @@
     \end{columns}
 \end{frame}
 
-\begin{frame}{Test Case}
-    \begin{columns}
-        \begin{column}{0.5\textwidth}
+\begin{frame}{Test Case Definition}
+    \begin{columns}[T,totalwidth=\linewidth]
+        \begin{column}{0.6\textwidth}
             \begin{itemize}
-                \item 3 components
+                \item Consists of two phases
+                \begin{itemize}
+                    \item \textbf{Initialization phase}
+                    \item \textbf{Test phase}
+                \end{itemize}
+                \item Commands are always verified
+                \begin{itemize}
+                    \item Initialization phases are explicitly covered
+                \end{itemize}
+                \item Special commands for synchronization
+                \begin{itemize}
+                    \item \textit{Sync} - Wait until SUT \& Test server reach this point
+                    \item \textit{Wait} - Wait time until sending the next command
+                \end{itemize}
+                \item Specified as UML sequence diagrams
+                \item Total of 14 test cases defined
             \end{itemize}
         \end{column}
-        \begin{column}{0.5\textwidth}
-            \includegraphics{figures/testcases/TestCase11.pdf}
+        \begin{column}{0.4\textwidth}
+            \includegraphics[height=0.75\textheight]{figures/testcases/TestCase3.pdf}
         \end{column}
     \end{columns}
+\end{frame}
+
+\begin{frame}{Test Case Implementation}
+    \lstinputlisting[language=Python, firstline=33, lastline=45]{figures/test3.py}
 \end{frame}
 
 \section{Test Implementation \& Results}
